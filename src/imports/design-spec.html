@@ -1,0 +1,1274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Diabetic Care — Figma Design Spec</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --primary: #1D9BF0;
+    --primary-dark: #1579c0;
+    --bg: #F5F8FF;
+    --card: #FFFFFF;
+    --foreground: #1A2138;
+    --muted: #F0F4FF;
+    --muted-fg: #7B8EC8;
+    --border: #DCE5FF;
+    --secondary: #E8F0FE;
+    --success: #22C55E;
+    --warning: #F59E0B;
+    --danger: #EF4444;
+    --info: #6366F1;
+    --radius: 14px;
+    --page-bg: #0F1729;
+  }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--page-bg);
+    color: #E2E8F0;
+    line-height: 1.6;
+  }
+
+  /* ── COVER ── */
+  .cover {
+    background: linear-gradient(135deg, #0F1729 0%, #1a2744 50%, #0d1f3c 100%);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 60px 24px;
+    position: relative;
+    overflow: hidden;
+  }
+  .cover::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse 70% 50% at 50% 30%, rgba(29,155,240,0.18) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .cover-logo {
+    width: 96px; height: 96px; border-radius: 28px;
+    background: linear-gradient(135deg, var(--primary), #0e6db8);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 48px; margin-bottom: 32px;
+    box-shadow: 0 24px 64px rgba(29,155,240,0.4);
+  }
+  .cover-title {
+    font-size: clamp(36px, 6vw, 64px);
+    font-weight: 900; color: #FFF;
+    line-height: 1.1; letter-spacing: -1.5px;
+  }
+  .cover-subtitle {
+    font-size: 18px; color: rgba(255,255,255,0.6);
+    margin-top: 12px; max-width: 520px;
+  }
+  .cover-meta {
+    display: flex; gap: 24px; margin-top: 48px; flex-wrap: wrap; justify-content: center;
+  }
+  .cover-chip {
+    background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 100px; padding: 8px 20px;
+    font-size: 13px; font-weight: 600; color: rgba(255,255,255,0.8);
+  }
+  .cover-chip span { color: var(--primary); }
+  .toc {
+    margin-top: 64px; background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1); border-radius: 20px;
+    padding: 32px 40px; text-align: left; width: 100%; max-width: 640px;
+  }
+  .toc-title { font-size: 12px; font-weight: 700; color: var(--primary); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 20px; }
+  .toc-list { list-style: none; display: grid; grid-template-columns: 1fr 1fr; gap: 10px 32px; }
+  .toc-list li { font-size: 14px; color: rgba(255,255,255,0.7); display: flex; align-items: center; gap: 8px; }
+  .toc-list li::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--primary); flex-shrink: 0; }
+
+  /* ── LAYOUT ── */
+  .page { max-width: 1200px; margin: 0 auto; padding: 80px 40px; }
+  .section { margin-bottom: 80px; }
+  .section-tag {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: rgba(29,155,240,0.15); border: 1px solid rgba(29,155,240,0.3);
+    border-radius: 100px; padding: 6px 16px;
+    font-size: 11px; font-weight: 700; color: var(--primary);
+    letter-spacing: 2px; text-transform: uppercase; margin-bottom: 16px;
+  }
+  .section-title {
+    font-size: clamp(28px, 4vw, 42px); font-weight: 800; color: #FFF;
+    letter-spacing: -0.5px; margin-bottom: 8px;
+  }
+  .section-desc { font-size: 16px; color: rgba(255,255,255,0.5); max-width: 600px; margin-bottom: 48px; }
+  hr.divider { border: none; border-top: 1px solid rgba(255,255,255,0.07); margin: 80px 0; }
+
+  /* ── COLOR PALETTE ── */
+  .color-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 16px; }
+  .color-card {
+    border-radius: 16px; overflow: hidden;
+    border: 1px solid rgba(255,255,255,0.08);
+    transition: transform 0.2s; cursor: default;
+  }
+  .color-card:hover { transform: translateY(-3px); }
+  .color-swatch { height: 100px; }
+  .color-info { padding: 14px 16px; background: rgba(255,255,255,0.05); }
+  .color-name { font-size: 13px; font-weight: 700; color: #FFF; margin-bottom: 4px; }
+  .color-hex { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: rgba(255,255,255,0.5); }
+  .color-usage { font-size: 11px; color: rgba(255,255,255,0.4); margin-top: 4px; }
+
+  /* ── STATUS COLORS ── */
+  .status-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; }
+  .status-card {
+    border-radius: 14px; padding: 18px 20px;
+    border: 1px solid rgba(255,255,255,0.08); background: rgba(255,255,255,0.04);
+    display: flex; align-items: center; gap: 14px;
+  }
+  .status-dot { width: 36px; height: 36px; border-radius: 10px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 16px; }
+  .status-label { font-size: 13px; font-weight: 700; color: #FFF; margin-bottom: 3px; }
+  .status-hex { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: rgba(255,255,255,0.4); }
+
+  /* ── TYPOGRAPHY ── */
+  .type-table { width: 100%; border-collapse: collapse; }
+  .type-table th {
+    text-align: left; padding: 12px 16px;
+    font-size: 11px; font-weight: 700; color: rgba(255,255,255,0.4);
+    letter-spacing: 1.5px; text-transform: uppercase;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+  }
+  .type-table td { padding: 16px; border-bottom: 1px solid rgba(255,255,255,0.05); vertical-align: middle; }
+  .type-table tr:last-child td { border-bottom: none; }
+  .type-label { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--primary); background: rgba(29,155,240,0.12); padding: 3px 8px; border-radius: 6px; white-space: nowrap; }
+  .type-meta { font-size: 12px; color: rgba(255,255,255,0.4); margin-top: 4px; font-family: 'JetBrains Mono', monospace; }
+  .type-usage-badge {
+    background: rgba(255,255,255,0.07); border-radius: 8px;
+    padding: 4px 10px; font-size: 11px; color: rgba(255,255,255,0.5);
+    display: inline-block;
+  }
+
+  /* ── SPACING ── */
+  .spacing-row { display: flex; align-items: center; gap: 20px; padding: 14px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
+  .spacing-row:last-child { border-bottom: none; }
+  .spacing-bar-wrap { flex: 1; max-width: 300px; background: rgba(255,255,255,0.05); border-radius: 4px; height: 20px; overflow: hidden; }
+  .spacing-bar { height: 100%; background: linear-gradient(90deg, var(--primary), rgba(29,155,240,0.5)); border-radius: 4px; }
+  .spacing-token { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--primary); width: 60px; }
+  .spacing-px { font-size: 13px; color: rgba(255,255,255,0.6); width: 50px; }
+  .spacing-use { font-size: 12px; color: rgba(255,255,255,0.4); }
+
+  /* ── SCREENS ── */
+  .screens-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 32px; }
+  .screen-card {
+    border-radius: 20px; overflow: hidden;
+    border: 1px solid rgba(255,255,255,0.1);
+    background: rgba(255,255,255,0.04);
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .screen-card:hover { transform: translateY(-4px); box-shadow: 0 20px 60px rgba(0,0,0,0.4); }
+  .screen-header-bar {
+    background: rgba(255,255,255,0.06); padding: 14px 20px;
+    display: flex; align-items: center; gap: 12px;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+  .screen-num {
+    width: 28px; height: 28px; border-radius: 8px;
+    background: var(--primary); font-size: 12px;
+    font-weight: 700; color: #FFF;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .screen-name { font-size: 14px; font-weight: 700; color: #FFF; flex: 1; }
+  .screen-route { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: rgba(255,255,255,0.35); }
+  .screen-mockup {
+    padding: 20px; background: #F5F8FF;
+    min-height: 420px; position: relative;
+  }
+  .screen-spec { padding: 20px; }
+  .spec-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 12px; }
+  .spec-row:last-child { border-bottom: none; }
+  .spec-key { color: rgba(255,255,255,0.4); }
+  .spec-val { color: rgba(255,255,255,0.8); font-family: 'JetBrains Mono', monospace; font-size: 11px; }
+
+  /* ── MOCK PHONE ── */
+  .phone-wrap { display: flex; justify-content: center; gap: 40px; flex-wrap: wrap; margin-bottom: 48px; }
+  .phone-shell {
+    width: 320px; border-radius: 44px;
+    background: #1A1A1A;
+    border: 3px solid #333;
+    box-shadow: 0 40px 100px rgba(0,0,0,0.7), inset 0 0 0 1px rgba(255,255,255,0.08);
+    overflow: hidden; position: relative;
+    flex-shrink: 0;
+  }
+  .phone-notch {
+    width: 120px; height: 28px; background: #1A1A1A;
+    border-radius: 0 0 18px 18px; margin: 0 auto;
+    position: relative; z-index: 2;
+  }
+  .phone-screen { background: var(--bg); position: relative; overflow: hidden; }
+  .phone-home-bar { height: 28px; background: var(--card); display: flex; align-items: center; justify-content: center; }
+  .phone-home-pill { width: 100px; height: 4px; border-radius: 2px; background: rgba(0,0,0,0.2); }
+
+  /* ── SCREEN CONTENT MOCKUPS ── */
+  .mock-status-bar { height: 36px; display: flex; align-items: center; justify-content: space-between; padding: 0 20px; background: #1D9BF0; }
+  .mock-status-time { font-size: 13px; font-weight: 700; color: #FFF; }
+  .mock-status-icons { display: flex; gap: 6px; align-items: center; }
+  .mock-status-icon { width: 14px; height: 8px; background: rgba(255,255,255,0.8); border-radius: 2px; }
+  .mock-status-bat { width: 20px; height: 10px; border: 2px solid rgba(255,255,255,0.8); border-radius: 3px; position: relative; }
+  .mock-status-bat::after { content:''; position: absolute; right: -5px; top: 2px; width: 3px; height: 6px; background: rgba(255,255,255,0.8); border-radius: 1px; }
+
+  /* LOGIN MOCK */
+  .mock-login { background: #F5F8FF; padding: 0; }
+  .mock-login-hero { background: linear-gradient(135deg, #1D9BF0, #0e6db8); padding: 32px 24px 40px; text-align: center; }
+  .mock-login-icon { width: 64px; height: 64px; background: rgba(255,255,255,0.2); border-radius: 18px; margin: 0 auto 12px; display: flex; align-items: center; justify-content: center; font-size: 30px; }
+  .mock-login-title { font-size: 20px; font-weight: 800; color: #FFF; }
+  .mock-login-sub { font-size: 12px; color: rgba(255,255,255,0.7); margin-top: 4px; }
+  .mock-card { background: #FFF; border-radius: 16px; margin: -24px 16px 0; padding: 20px; box-shadow: 0 8px 32px rgba(0,0,0,0.08); }
+  .mock-label { font-size: 10px; font-weight: 700; color: #7B8EC8; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+  .mock-input { background: #F0F4FF; border-radius: 10px; border: 1.5px solid #DCE5FF; padding: 10px 14px; font-size: 13px; color: #7B8EC8; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+  .mock-btn { background: #DCE5FF; border-radius: 10px; padding: 12px; text-align: center; font-size: 13px; font-weight: 600; color: #7B8EC8; }
+  .mock-btn.active { background: #1D9BF0; color: #FFF; box-shadow: 0 4px 16px rgba(29,155,240,0.3); }
+
+  /* HOME MOCK */
+  .mock-home-header { background: #1D9BF0; padding: 16px 20px 28px; border-radius: 0 0 20px 20px; }
+  .mock-home-greet { font-size: 12px; color: rgba(255,255,255,0.75); }
+  .mock-home-name { font-size: 18px; font-weight: 800; color: #FFF; }
+  .mock-home-sub { font-size: 11px; color: rgba(255,255,255,0.6); margin-top: 2px; }
+  .mock-home-badge { background: rgba(255,255,255,0.2); border-radius: 10px; padding: 4px 10px; display: inline-block; font-size: 10px; color: #FFF; margin-top: 8px; }
+  .mock-stat-row { display: flex; gap: 10px; padding: 16px; }
+  .mock-stat { flex: 1; background: #FFF; border-radius: 12px; padding: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+  .mock-stat-icon { width: 28px; height: 28px; border-radius: 8px; margin-bottom: 8px; display: flex; align-items: center; justify-content: center; font-size: 14px; }
+  .mock-stat-val { font-size: 18px; font-weight: 800; color: #1A2138; }
+  .mock-stat-unit { font-size: 10px; color: #7B8EC8; }
+  .mock-stat-status { font-size: 10px; font-weight: 700; margin-top: 4px; }
+  .mock-section-title { font-size: 13px; font-weight: 700; color: #1A2138; padding: 0 16px 10px; }
+  .mock-check-card { margin: 0 16px; background: #FFF; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+  .mock-check-row { display: flex; align-items: center; padding: 10px 14px; border-bottom: 1px solid #DCE5FF; gap: 10px; }
+  .mock-check-row:last-child { border-bottom: none; }
+  .mock-check-icon { width: 26px; height: 26px; border-radius: 13px; display: flex; align-items: center; justify-content: center; font-size: 12px; flex-shrink: 0; }
+  .mock-check-label { flex: 1; font-size: 11px; color: #1A2138; }
+  .mock-check-status { font-size: 10px; font-weight: 700; }
+
+  /* TAB BAR MOCK */
+  .mock-tabbar { background: #FFF; border-top: 1px solid #DCE5FF; padding: 8px 0 4px; display: flex; }
+  .mock-tab { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+  .mock-tab-icon { font-size: 18px; }
+  .mock-tab-label { font-size: 9px; font-weight: 600; }
+
+  /* ── COMPONENTS ── */
+  .comp-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 24px; }
+  .comp-card {
+    background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 18px; overflow: hidden;
+  }
+  .comp-preview { padding: 28px 24px; background: #F5F8FF; min-height: 100px; display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 12px; }
+  .comp-info { padding: 18px 20px; }
+  .comp-name { font-size: 14px; font-weight: 700; color: #FFF; margin-bottom: 4px; }
+  .comp-desc { font-size: 12px; color: rgba(255,255,255,0.45); line-height: 1.5; }
+  .comp-props { margin-top: 12px; display: flex; flex-wrap: wrap; gap: 6px; }
+  .comp-prop { background: rgba(255,255,255,0.08); border-radius: 6px; padding: 3px 8px; font-size: 10px; color: rgba(255,255,255,0.5); font-family: 'JetBrains Mono', monospace; }
+
+  /* ACTUAL COMPONENT PREVIEWS */
+  .prev-btn { padding: 10px 20px; border-radius: 10px; font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 600; border: none; cursor: default; }
+  .prev-btn.primary { background: #1D9BF0; color: #FFF; box-shadow: 0 4px 14px rgba(29,155,240,0.35); }
+  .prev-btn.secondary { background: #E8F0FE; color: #1D9BF0; }
+  .prev-btn.danger { background: #FEE2E2; color: #EF4444; }
+  .prev-btn.disabled { background: #F0F4FF; color: #7B8EC8; }
+
+  .prev-input { background: #F0F4FF; border: 1.5px solid #DCE5FF; border-radius: 10px; padding: 10px 14px; font-family: 'Inter', sans-serif; font-size: 13px; color: #7B8EC8; width: 100%; max-width: 200px; }
+  .prev-input.focused { border-color: #1D9BF0; background: #EFF6FF; }
+
+  .prev-badge { padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; }
+  .prev-badge.success { background: #DCFCE7; color: #22C55E; }
+  .prev-badge.warning { background: #FEF3C7; color: #F59E0B; }
+  .prev-badge.danger { background: #FEE2E2; color: #EF4444; }
+  .prev-badge.info { background: #DBEAFE; color: #1D9BF0; }
+
+  .prev-card { background: #FFF; border-radius: 14px; padding: 16px; box-shadow: 0 2px 12px rgba(0,0,0,0.08); width: 100%; max-width: 220px; }
+  .prev-card-title { font-size: 13px; font-weight: 700; color: #1A2138; margin-bottom: 4px; }
+  .prev-card-sub { font-size: 11px; color: #7B8EC8; }
+
+  .prev-icon-badge { width: 44px; height: 44px; border-radius: 22px; display: flex; align-items: center; justify-content: center; font-size: 20px; }
+
+  .prev-check { width: 28px; height: 28px; border-radius: 14px; border: 2px solid #DCE5FF; display: flex; align-items: center; justify-content: center; }
+  .prev-check.checked { background: #22C55E; border-color: #22C55E; color: #FFF; font-size: 14px; }
+
+  .prev-progress { width: 180px; }
+  .prev-progress-bar { height: 8px; background: #DCE5FF; border-radius: 4px; overflow: hidden; }
+  .prev-progress-fill { height: 100%; border-radius: 4px; }
+
+  /* ── ICON GRID ── */
+  .icon-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 12px; }
+  .icon-item {
+    background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 12px; padding: 16px 8px; text-align: center;
+    transition: background 0.2s;
+  }
+  .icon-item:hover { background: rgba(29,155,240,0.1); }
+  .icon-emoji { font-size: 24px; margin-bottom: 8px; }
+  .icon-name { font-size: 10px; color: rgba(255,255,255,0.4); font-family: 'JetBrains Mono', monospace; line-height: 1.4; word-break: break-all; }
+
+  /* ── FLOW DIAGRAM ── */
+  .flow-wrap { position: relative; }
+  .flow-row { display: flex; align-items: center; justify-content: center; gap: 0; flex-wrap: wrap; }
+  .flow-node {
+    background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 14px; padding: 16px 20px; text-align: center;
+    min-width: 120px;
+  }
+  .flow-node.primary { background: rgba(29,155,240,0.15); border-color: rgba(29,155,240,0.4); }
+  .flow-node.success { background: rgba(34,197,94,0.12); border-color: rgba(34,197,94,0.3); }
+  .flow-node-title { font-size: 13px; font-weight: 700; color: #FFF; margin-bottom: 4px; }
+  .flow-node-sub { font-size: 11px; color: rgba(255,255,255,0.4); }
+  .flow-arrow { font-size: 20px; color: rgba(255,255,255,0.2); padding: 0 4px; }
+
+  /* ── FOOTER ── */
+  .spec-footer {
+    background: rgba(255,255,255,0.03); border-top: 1px solid rgba(255,255,255,0.06);
+    padding: 48px 40px; text-align: center;
+  }
+  .footer-title { font-size: 20px; font-weight: 700; color: #FFF; margin-bottom: 8px; }
+  .footer-sub { font-size: 14px; color: rgba(255,255,255,0.4); margin-bottom: 32px; }
+  .footer-grid { display: flex; justify-content: center; gap: 48px; flex-wrap: wrap; }
+  .footer-col-title { font-size: 11px; font-weight: 700; color: rgba(255,255,255,0.3); letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 12px; }
+  .footer-col-item { font-size: 13px; color: rgba(255,255,255,0.6); margin-bottom: 6px; }
+
+  /* ── GRID LINES ── */
+  .grid-spec {
+    background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px; overflow: hidden;
+  }
+  .grid-demo {
+    padding: 24px; background: #F5F8FF; position: relative;
+    display: flex; flex-direction: column; gap: 12px;
+  }
+
+  /* scrollbar */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 3px; }
+
+  /* print */
+  @media print {
+    body { background: #FFF; color: #000; }
+    .cover { min-height: auto; background: #FFF; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════ COVER ══════════════════════ -->
+<div class="cover">
+  <div class="cover-logo">💊</div>
+  <h1 class="cover-title">Diabetic Care</h1>
+  <p class="cover-subtitle">Patient Mobile App — Complete UI Design Specification</p>
+  <div class="cover-meta">
+    <div class="cover-chip">Platform <span>Android · iOS</span></div>
+    <div class="cover-chip">Framework <span>React Native · Expo</span></div>
+    <div class="cover-chip">Version <span>1.0.0</span></div>
+    <div class="cover-chip">Date <span>May 2026</span></div>
+  </div>
+  <div class="toc">
+    <div class="toc-title">Contents</div>
+    <ul class="toc-list">
+      <li>Color Palette</li>
+      <li>Typography</li>
+      <li>Spacing System</li>
+      <li>Screen Inventory</li>
+      <li>Screen Mockups</li>
+      <li>Components</li>
+      <li>Icons Reference</li>
+      <li>Navigation Flow</li>
+    </ul>
+  </div>
+</div>
+
+<div class="page">
+
+<!-- ══════════════════════ 01 COLORS ══════════════════════ -->
+<div class="section">
+  <div class="section-tag">01 — Foundation</div>
+  <h2 class="section-title">Color Palette</h2>
+  <p class="section-desc">Medical blue theme. All colors are designed for WCAG AA contrast on light backgrounds.</p>
+
+  <h3 style="font-size:13px;font-weight:700;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:20px;">Core Palette</h3>
+  <div class="color-grid" style="margin-bottom:40px;">
+    <div class="color-card">
+      <div class="color-swatch" style="background:#1D9BF0;"></div>
+      <div class="color-info"><div class="color-name">Primary</div><div class="color-hex">#1D9BF0</div><div class="color-usage">Buttons, links, active states</div></div>
+    </div>
+    <div class="color-card">
+      <div class="color-swatch" style="background:#F5F8FF;"></div>
+      <div class="color-info"><div class="color-name">Background</div><div class="color-hex">#F5F8FF</div><div class="color-usage">App background</div></div>
+    </div>
+    <div class="color-card">
+      <div class="color-swatch" style="background:#FFFFFF; border: 1px solid #eee;"></div>
+      <div class="color-info"><div class="color-name">Card</div><div class="color-hex">#FFFFFF</div><div class="color-usage">Cards, modals, sheets</div></div>
+    </div>
+    <div class="color-card">
+      <div class="color-swatch" style="background:#1A2138;"></div>
+      <div class="color-info"><div class="color-name">Foreground</div><div class="color-hex">#1A2138</div><div class="color-usage">Primary text</div></div>
+    </div>
+    <div class="color-card">
+      <div class="color-swatch" style="background:#E8F0FE;"></div>
+      <div class="color-info"><div class="color-name">Secondary</div><div class="color-hex">#E8F0FE</div><div class="color-usage">Tag bg, secondary fills</div></div>
+    </div>
+    <div class="color-card">
+      <div class="color-swatch" style="background:#F0F4FF;"></div>
+      <div class="color-info"><div class="color-name">Muted</div><div class="color-hex">#F0F4FF</div><div class="color-usage">Input bg, disabled fills</div></div>
+    </div>
+    <div class="color-card">
+      <div class="color-swatch" style="background:#7B8EC8;"></div>
+      <div class="color-info"><div class="color-name">Muted Foreground</div><div class="color-hex">#7B8EC8</div><div class="color-usage">Placeholder, captions</div></div>
+    </div>
+    <div class="color-card">
+      <div class="color-swatch" style="background:#DCE5FF;"></div>
+      <div class="color-info"><div class="color-name">Border</div><div class="color-hex">#DCE5FF</div><div class="color-usage">Dividers, input borders</div></div>
+    </div>
+  </div>
+
+  <h3 style="font-size:13px;font-weight:700;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:20px;">Status Colors</h3>
+  <div class="status-grid">
+    <div class="status-card">
+      <div class="status-dot" style="background:#DCFCE7;">✅</div>
+      <div><div class="status-label" style="color:#22C55E;">Success</div><div class="status-hex">#22C55E</div></div>
+    </div>
+    <div class="status-card">
+      <div class="status-dot" style="background:#FEF3C7;">⚠️</div>
+      <div><div class="status-label" style="color:#F59E0B;">Warning</div><div class="status-hex">#F59E0B</div></div>
+    </div>
+    <div class="status-card">
+      <div class="status-dot" style="background:#FEE2E2;">🚨</div>
+      <div><div class="status-label" style="color:#EF4444;">Danger</div><div class="status-hex">#EF4444</div></div>
+    </div>
+    <div class="status-card">
+      <div class="status-dot" style="background:#DBEAFE;">ℹ️</div>
+      <div><div class="status-label" style="color:#6366F1;">Info</div><div class="status-hex">#6366F1</div></div>
+    </div>
+    <div class="status-card">
+      <div class="status-dot" style="background:#FCE7F3;">🌸</div>
+      <div><div class="status-label" style="color:#EC4899;">Pink</div><div class="status-hex">#EC4899</div></div>
+    </div>
+    <div class="status-card">
+      <div class="status-dot" style="background:#EDE9FE;">💜</div>
+      <div><div class="status-label" style="color:#6366F1;">Indigo</div><div class="status-hex">#6366F1</div></div>
+    </div>
+  </div>
+
+  <div style="margin-top:32px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:24px;">
+    <h4 style="font-size:13px;font-weight:700;color:rgba(255,255,255,0.6);margin-bottom:16px;">Glucose Status Colors</h4>
+    <div style="display:flex;gap:12px;flex-wrap:wrap;">
+      <div style="background:#DCFCE7;border-radius:10px;padding:12px 16px;display:flex;align-items:center;gap:8px;"><div style="width:8px;height:8px;border-radius:50%;background:#22C55E;"></div><span style="font-size:12px;font-weight:700;color:#22C55E;">Normal &lt;100 FBS</span></div>
+      <div style="background:#FEF3C7;border-radius:10px;padding:12px 16px;display:flex;align-items:center;gap:8px;"><div style="width:8px;height:8px;border-radius:50%;background:#F59E0B;"></div><span style="font-size:12px;font-weight:700;color:#F59E0B;">Pre-diabetic 100–125</span></div>
+      <div style="background:#FEE2E2;border-radius:10px;padding:12px 16px;display:flex;align-items:center;gap:8px;"><div style="width:8px;height:8px;border-radius:50%;background:#EF4444;"></div><span style="font-size:12px;font-weight:700;color:#EF4444;">High ≥126 FBS</span></div>
+      <div style="background:#EDE9FE;border-radius:10px;padding:12px 16px;display:flex;align-items:center;gap:8px;"><div style="width:8px;height:8px;border-radius:50%;background:#6366F1;"></div><span style="font-size:12px;font-weight:700;color:#6366F1;">Low &lt;70 mg/dL</span></div>
+    </div>
+  </div>
+</div>
+
+<hr class="divider" />
+
+<!-- ══════════════════════ 02 TYPOGRAPHY ══════════════════════ -->
+<div class="section">
+  <div class="section-tag">02 — Foundation</div>
+  <h2 class="section-title">Typography</h2>
+  <p class="section-desc">Font family: <strong style="color:#1D9BF0;">Inter</strong> — all weights used across the app for a clean, medical aesthetic.</p>
+
+  <table class="type-table">
+    <thead>
+      <tr>
+        <th>Token</th>
+        <th>Preview</th>
+        <th>Specs</th>
+        <th>Usage</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="type-label">H1</span></td>
+        <td><span style="font-size:26px;font-weight:800;color:#fff;letter-spacing:-0.5px;">Good morning</span></td>
+        <td><div style="color:rgba(255,255,255,0.7);font-size:13px;">26px / 800</div><div class="type-meta">Inter_700Bold · -0.5 tracking</div></td>
+        <td><span class="type-usage-badge">Login title, section hero</span></td>
+      </tr>
+      <tr>
+        <td><span class="type-label">H2</span></td>
+        <td><span style="font-size:22px;font-weight:800;color:#fff;">Ramesh Kumar</span></td>
+        <td><div style="color:rgba(255,255,255,0.7);font-size:13px;">22px / 800</div><div class="type-meta">Inter_700Bold</div></td>
+        <td><span class="type-usage-badge">Patient name, screen title</span></td>
+      </tr>
+      <tr>
+        <td><span class="type-label">H3</span></td>
+        <td><span style="font-size:20px;font-weight:700;color:#fff;">Glucose Tracking</span></td>
+        <td><div style="color:rgba(255,255,255,0.7);font-size:13px;">20px / 700</div><div class="type-meta">Inter_700Bold</div></td>
+        <td><span class="type-usage-badge">Page headers</span></td>
+      </tr>
+      <tr>
+        <td><span class="type-label">H4</span></td>
+        <td><span style="font-size:16px;font-weight:700;color:#fff;">Today's Overview</span></td>
+        <td><div style="color:rgba(255,255,255,0.7);font-size:13px;">16px / 700</div><div class="type-meta">Inter_700Bold</div></td>
+        <td><span class="type-usage-badge">Section titles</span></td>
+      </tr>
+      <tr>
+        <td><span class="type-label">Body-1</span></td>
+        <td><span style="font-size:14px;font-weight:600;color:rgba(255,255,255,0.85);">Medication name</span></td>
+        <td><div style="color:rgba(255,255,255,0.7);font-size:13px;">14px / 600</div><div class="type-meta">Inter_600SemiBold</div></td>
+        <td><span class="type-usage-badge">Card titles, list items</span></td>
+      </tr>
+      <tr>
+        <td><span class="type-label">Body-2</span></td>
+        <td><span style="font-size:13px;font-weight:500;color:rgba(255,255,255,0.7);">Type 2 Diabetes · 120 mg/dL</span></td>
+        <td><div style="color:rgba(255,255,255,0.7);font-size:13px;">13px / 500</div><div class="type-meta">Inter_500Medium</div></td>
+        <td><span class="type-usage-badge">Body text, descriptions</span></td>
+      </tr>
+      <tr>
+        <td><span class="type-label">Caption</span></td>
+        <td><span style="font-size:12px;font-weight:400;color:rgba(255,255,255,0.5);">Post-meal blood sugar · 2 hours after</span></td>
+        <td><div style="color:rgba(255,255,255,0.7);font-size:13px;">12px / 400</div><div class="type-meta">Inter_400Regular</div></td>
+        <td><span class="type-usage-badge">Timestamps, subtitles</span></td>
+      </tr>
+      <tr>
+        <td><span class="type-label">Micro</span></td>
+        <td><span style="font-size:11px;font-weight:600;color:rgba(255,255,255,0.45);text-transform:uppercase;letter-spacing:1px;">TODAY'S MEALS</span></td>
+        <td><div style="color:rgba(255,255,255,0.7);font-size:13px;">11px / 600 · +1px tracking</div><div class="type-meta">Inter_600SemiBold · uppercase</div></td>
+        <td><span class="type-usage-badge">Section sub-headers</span></td>
+      </tr>
+      <tr>
+        <td><span class="type-label">Stat</span></td>
+        <td><span style="font-size:28px;font-weight:800;color:#1D9BF0;">500</span></td>
+        <td><div style="color:rgba(255,255,255,0.7);font-size:13px;">28–56px / 800</div><div class="type-meta">Inter_700Bold</div></td>
+        <td><span class="type-usage-badge">Glucose value, sleep hours</span></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<hr class="divider" />
+
+<!-- ══════════════════════ 03 SPACING ══════════════════════ -->
+<div class="section">
+  <div class="section-tag">03 — Foundation</div>
+  <h2 class="section-title">Spacing &amp; Layout</h2>
+  <p class="section-desc">8pt grid system. Border radius: <strong style="color:#1D9BF0;">14px</strong> for cards, <strong style="color:#1D9BF0;">20–22px</strong> for circles.</p>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:start;">
+    <div>
+      <h4 style="font-size:13px;font-weight:700;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:20px;">Spacing Scale</h4>
+      <div class="spacing-row"><span class="spacing-token">4px</span><div class="spacing-bar-wrap"><div class="spacing-bar" style="width:4px;"></div></div><span class="spacing-use">Icon gaps, micro padding</span></div>
+      <div class="spacing-row"><span class="spacing-token">8px</span><div class="spacing-bar-wrap"><div class="spacing-bar" style="width:8px;"></div></div><span class="spacing-use">Tag padding, tight gaps</span></div>
+      <div class="spacing-row"><span class="spacing-token">10px</span><div class="spacing-bar-wrap"><div class="spacing-bar" style="width:10px;"></div></div><span class="spacing-use">Card item gaps</span></div>
+      <div class="spacing-row"><span class="spacing-token">12px</span><div class="spacing-bar-wrap"><div class="spacing-bar" style="width:12px;"></div></div><span class="spacing-use">Grid gap, list gap</span></div>
+      <div class="spacing-row"><span class="spacing-token">14px</span><div class="spacing-bar-wrap"><div class="spacing-bar" style="width:14px;"></div></div><span class="spacing-use">Card item row padding</span></div>
+      <div class="spacing-row"><span class="spacing-token">16px</span><div class="spacing-bar-wrap"><div class="spacing-bar" style="width:16px;"></div></div><span class="spacing-use">Card padding, section gap</span></div>
+      <div class="spacing-row"><span class="spacing-token">20px</span><div class="spacing-bar-wrap"><div class="spacing-bar" style="width:20px;"></div></div><span class="spacing-use">Page horizontal padding</span></div>
+      <div class="spacing-row"><span class="spacing-token">24px</span><div class="spacing-bar-wrap"><div class="spacing-bar" style="width:24px;"></div></div><span class="spacing-use">Modal padding</span></div>
+      <div class="spacing-row"><span class="spacing-token">28px</span><div class="spacing-bar-wrap"><div class="spacing-bar" style="width:28px;"></div></div><span class="spacing-use">Header padding top</span></div>
+    </div>
+    <div>
+      <h4 style="font-size:13px;font-weight:700;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:20px;">Radius System</h4>
+      <div style="display:flex;flex-direction:column;gap:16px;">
+        <div style="display:flex;align-items:center;gap:16px;">
+          <div style="width:60px;height:60px;border-radius:6px;background:rgba(29,155,240,0.2);border:2px solid rgba(29,155,240,0.4);flex-shrink:0;"></div>
+          <div><div style="font-size:14px;font-weight:700;color:#FFF;">6px</div><div style="font-size:12px;color:rgba(255,255,255,0.4);">Chips, tags, pills</div></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:16px;">
+          <div style="width:60px;height:60px;border-radius:10px;background:rgba(29,155,240,0.2);border:2px solid rgba(29,155,240,0.4);flex-shrink:0;"></div>
+          <div><div style="font-size:14px;font-weight:700;color:#FFF;">10px</div><div style="font-size:12px;color:rgba(255,255,255,0.4);">Inputs, small buttons</div></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:16px;">
+          <div style="width:60px;height:60px;border-radius:14px;background:rgba(29,155,240,0.2);border:2px solid rgba(29,155,240,0.4);flex-shrink:0;"></div>
+          <div><div style="font-size:14px;font-weight:700;color:#FFF;">14px ← default</div><div style="font-size:12px;color:rgba(255,255,255,0.4);">Cards, sections, modals</div></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:16px;">
+          <div style="width:60px;height:60px;border-radius:20px;background:rgba(29,155,240,0.2);border:2px solid rgba(29,155,240,0.4);flex-shrink:0;"></div>
+          <div><div style="font-size:14px;font-weight:700;color:#FFF;">20–24px</div><div style="font-size:12px;color:rgba(255,255,255,0.4);">Bottom sheets, FABs</div></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:16px;">
+          <div style="width:60px;height:60px;border-radius:30px;background:rgba(29,155,240,0.2);border:2px solid rgba(29,155,240,0.4);flex-shrink:0;"></div>
+          <div><div style="font-size:14px;font-weight:700;color:#FFF;">50% = circle</div><div style="font-size:12px;color:rgba(255,255,255,0.4);">Avatars, icon badges, FABs</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<hr class="divider" />
+
+<!-- ══════════════════════ 04 SCREENS INVENTORY ══════════════════════ -->
+<div class="section">
+  <div class="section-tag">04 — Screens</div>
+  <h2 class="section-title">Screen Inventory</h2>
+  <p class="section-desc">11 screens total across 3 layers: Auth → Main Tabs → Sub-screens.</p>
+
+  <div class="screens-grid">
+
+    <div class="screen-card">
+      <div class="screen-header-bar">
+        <div class="screen-num">1</div>
+        <div class="screen-name">Login / OTP</div>
+        <div class="screen-route">/login</div>
+      </div>
+      <div class="screen-mockup" style="background:#F5F8FF;padding:0;overflow:hidden;">
+        <div class="mock-login">
+          <div class="mock-login-hero">
+            <div class="mock-login-icon">💊</div>
+            <div class="mock-login-title">Diabetic Care</div>
+            <div class="mock-login-sub">Your personal health companion</div>
+          </div>
+          <div style="padding:0 16px 16px;">
+            <div class="mock-card" style="margin-top:-20px;">
+              <div class="mock-label">Mobile Number</div>
+              <div class="mock-input">📱 +91 Enter phone number</div>
+              <div class="mock-btn">Send OTP</div>
+              <div style="text-align:center;font-size:10px;color:#7B8EC8;margin-top:10px;">Demo: enter any 10-digit number</div>
+            </div>
+            <div style="background:#E8F0FE;border-radius:12px;padding:12px 14px;margin-top:12px;display:flex;align-items:center;gap:8px;">
+              <span>🛡️</span><span style="font-size:11px;color:#7B8EC8;">Your health data is private and securely stored on your device.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="screen-spec">
+        <div class="spec-row"><span class="spec-key">Type</span><span class="spec-val">Auth · Phone OTP</span></div>
+        <div class="spec-row"><span class="spec-key">Header bg</span><span class="spec-val">#1D9BF0 gradient</span></div>
+        <div class="spec-row"><span class="spec-key">Card radius</span><span class="spec-val">16px · shadow</span></div>
+        <div class="spec-row"><span class="spec-key">Input height</span><span class="spec-val">52px</span></div>
+        <div class="spec-row"><span class="spec-key">Button height</span><span class="spec-val">52px</span></div>
+      </div>
+    </div>
+
+    <div class="screen-card">
+      <div class="screen-header-bar">
+        <div class="screen-num">2</div>
+        <div class="screen-name">Home / Dashboard</div>
+        <div class="screen-route">/(tabs)</div>
+      </div>
+      <div class="screen-mockup" style="padding:0;overflow:hidden;">
+        <div class="mock-home-header">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+            <div>
+              <div class="mock-home-greet">Good morning,</div>
+              <div class="mock-home-name">Ramesh Kumar</div>
+              <div class="mock-home-sub">Type 2 Diabetes</div>
+              <div class="mock-home-badge">Today: Fri May 01 2026</div>
+            </div>
+            <div style="width:36px;height:36px;background:rgba(255,255,255,0.2);border-radius:18px;display:flex;align-items:center;justify-content:center;font-size:16px;position:relative;">🔔<div style="position:absolute;top:4px;right:4px;width:10px;height:10px;background:#EF4444;border-radius:5px;border:2px solid #1D9BF0;"></div></div>
+          </div>
+        </div>
+        <div class="mock-stat-row">
+          <div class="mock-stat">
+            <div class="mock-stat-icon" style="background:#FEF3C7;">💧</div>
+            <div class="mock-stat-val">500</div>
+            <div class="mock-stat-unit">mg/dL · Glucose</div>
+            <div class="mock-stat-status" style="color:#EF4444;">● High</div>
+          </div>
+          <div class="mock-stat">
+            <div class="mock-stat-icon" style="background:#DCFCE7;">✅</div>
+            <div class="mock-stat-val">4/4</div>
+            <div class="mock-stat-unit">tablets taken</div>
+            <div class="mock-stat-status" style="color:#22C55E;">● All done</div>
+          </div>
+        </div>
+        <div class="mock-section-title">Today's Checklist</div>
+        <div class="mock-check-card">
+          <div class="mock-check-row">
+            <div class="mock-check-icon" style="background:#DCFCE7;">💧</div>
+            <div class="mock-check-label">Log Glucose Reading</div>
+            <div class="mock-check-status" style="color:#22C55E;">Done</div>
+          </div>
+          <div class="mock-check-row">
+            <div class="mock-check-icon" style="background:#F3F4F6;">💊</div>
+            <div class="mock-check-label">Take Medications</div>
+            <div class="mock-check-status" style="color:#F59E0B;">4/4</div>
+          </div>
+          <div class="mock-check-row">
+            <div class="mock-check-icon" style="background:#EFF6FF;">💧</div>
+            <div class="mock-check-label">Drink Water (7/8)</div>
+            <div style="background:#E8F0FE;border-radius:12px;padding:4px 8px;font-size:9px;color:#1D9BF0;font-weight:700;">+ Add</div>
+          </div>
+        </div>
+      </div>
+      <div class="screen-spec">
+        <div class="spec-row"><span class="spec-key">Hero bg</span><span class="spec-val">#1D9BF0 · r-bottom 24px</span></div>
+        <div class="spec-row"><span class="spec-key">Notif bell</span><span class="spec-val">42×42 · rgba(w,0.2)</span></div>
+        <div class="spec-row"><span class="spec-key">Stat card</span><span class="spec-val">50% width · 14px radius</span></div>
+        <div class="spec-row"><span class="spec-key">Checklist</span><span class="spec-val">Full-width · row 42px</span></div>
+      </div>
+    </div>
+
+    <div class="screen-card">
+      <div class="screen-header-bar">
+        <div class="screen-num">3</div>
+        <div class="screen-name">Glucose Tracker</div>
+        <div class="screen-route">/(tabs)/glucose</div>
+      </div>
+      <div class="screen-mockup" style="background:#F5F8FF;padding:16px;display:flex;flex-direction:column;gap:10px;">
+        <div style="background:#FFF;border-radius:12px;padding:16px;box-shadow:0 2px 8px rgba(0,0,0,0.06);">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+            <div style="font-size:12px;font-weight:700;color:#1A2138;">Today's Readings</div>
+            <div style="background:#1D9BF0;border-radius:16px;width:28px;height:28px;display:flex;align-items:center;justify-content:center;color:#FFF;font-size:16px;">+</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid #DCE5FF;">
+            <div style="width:40px;height:40px;background:#FEE2E2;border-radius:20px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#EF4444;">FBS</div>
+            <div style="flex:1;"><div style="font-size:12px;font-weight:600;color:#1A2138;">Fasting Blood Sugar</div><div style="font-size:10px;color:#7B8EC8;">9:15 AM</div></div>
+            <div style="text-align:right;"><div style="font-size:20px;font-weight:800;color:#1A2138;">500</div><div style="background:#FEE2E2;border-radius:6px;padding:2px 6px;font-size:10px;font-weight:700;color:#EF4444;">High</div></div>
+          </div>
+        </div>
+        <div style="background:#EFF6FF;border-radius:12px;padding:16px;">
+          <div style="font-size:11px;font-weight:700;color:#1D9BF0;margin-bottom:8px;">NORMAL RANGE GUIDE</div>
+          <div style="display:flex;justify-content:space-between;font-size:11px;padding:4px 0;border-bottom:1px solid #DCE5FF;"><span style="color:#7B8EC8;">Fasting (FBS)</span><span style="font-weight:700;color:#1D9BF0;">70–100 mg/dL</span></div>
+          <div style="display:flex;justify-content:space-between;font-size:11px;padding:4px 0;border-bottom:1px solid #DCE5FF;"><span style="color:#7B8EC8;">Post-meal (PPBS)</span><span style="font-weight:700;color:#1D9BF0;">&lt;140 mg/dL</span></div>
+          <div style="display:flex;justify-content:space-between;font-size:11px;padding:4px 0;"><span style="color:#7B8EC8;">Random (RBS)</span><span style="font-weight:700;color:#1D9BF0;">&lt;140 mg/dL</span></div>
+        </div>
+      </div>
+      <div class="screen-spec">
+        <div class="spec-row"><span class="spec-key">Status chips</span><span class="spec-val">bg + text color pairs</span></div>
+        <div class="spec-row"><span class="spec-key">Type badge</span><span class="spec-val">40×40 circle</span></div>
+        <div class="spec-row"><span class="spec-key">Value text</span><span class="spec-val">20–22px / 800</span></div>
+        <div class="spec-row"><span class="spec-key">Add modal</span><span class="spec-val">Bottom sheet · 24px r</span></div>
+      </div>
+    </div>
+
+    <div class="screen-card">
+      <div class="screen-header-bar">
+        <div class="screen-num">4</div>
+        <div class="screen-name">Medications</div>
+        <div class="screen-route">/(tabs)/medications</div>
+      </div>
+      <div class="screen-mockup" style="background:#F5F8FF;padding:16px;display:flex;flex-direction:column;gap:10px;">
+        <div style="background:#FFF;border-radius:12px;padding:16px;">
+          <div style="font-size:12px;font-weight:700;color:#1A2138;margin-bottom:8px;">Daily Progress</div>
+          <div style="height:6px;background:#DCE5FF;border-radius:3px;overflow:hidden;margin-bottom:6px;"><div style="height:100%;background:#22C55E;border-radius:3px;width:100%;"></div></div>
+          <div style="display:flex;justify-content:space-between;font-size:10px;"><span style="color:#7B8EC8;">Daily Progress</span><span style="color:#22C55E;font-weight:700;">4/4 taken</span></div>
+        </div>
+        <div style="background:#EFF6FF;border-radius:12px;padding:12px;display:flex;gap:8px;border-left:3px solid #1D9BF0;">
+          <span>ℹ️</span><span style="font-size:11px;color:#7B8EC8;">Tap the circle to mark a medication as taken.</span>
+        </div>
+        <div style="background:#FFF;border-radius:12px;overflow:hidden;">
+          <div style="display:flex;align-items:center;padding:12px 14px;gap:10px;border-bottom:1px solid #DCE5FF;">
+            <div style="width:28px;height:28px;background:#FEF3C7;border-radius:14px;display:flex;align-items:center;justify-content:center;">☀️</div>
+            <span style="font-size:12px;font-weight:700;color:#1A2138;">Morning</span>
+          </div>
+          <div style="display:flex;align-items:center;padding:12px 14px;gap:10px;">
+            <div style="width:36px;height:36px;background:#F0F4FF;border-radius:18px;display:flex;align-items:center;justify-content:center;">💊</div>
+            <div style="flex:1;"><div style="font-size:12px;font-weight:600;color:#1A2138;">Metformin 500mg</div><div style="font-size:10px;color:#7B8EC8;">With breakfast</div></div>
+            <div style="width:26px;height:26px;border-radius:13px;background:#22C55E;border:2px solid #22C55E;display:flex;align-items:center;justify-content:center;color:#FFF;font-size:14px;">✓</div>
+          </div>
+        </div>
+      </div>
+      <div class="screen-spec">
+        <div class="spec-row"><span class="spec-key">Progress bar</span><span class="spec-val">6px height · #22C55E</span></div>
+        <div class="spec-row"><span class="spec-key">Timing icons</span><span class="spec-val">sun/cloud/moon/night</span></div>
+        <div class="spec-row"><span class="spec-key">Checkbox</span><span class="spec-val">26×26 · taken=#22C55E</span></div>
+        <div class="spec-row"><span class="spec-key">Row height</span><span class="spec-val">~60px</span></div>
+      </div>
+    </div>
+
+    <div class="screen-card">
+      <div class="screen-header-bar">
+        <div class="screen-num">5</div>
+        <div class="screen-name">Diet &amp; Nutrition</div>
+        <div class="screen-route">/(tabs)/diet</div>
+      </div>
+      <div class="screen-mockup" style="background:#F5F8FF;padding:16px;display:flex;flex-direction:column;gap:10px;">
+        <div style="background:#FFF;border-radius:12px;padding:16px;">
+          <div style="display:flex;justify-content:space-between;align-items:baseline;"><span style="font-size:10px;color:#7B8EC8;">Calories Today</span><span style="font-size:10px;color:#7B8EC8;">Goal: 1800 kcal</span></div>
+          <div style="font-size:24px;font-weight:800;color:#1D9BF0;margin:4px 0;">0 kcal</div>
+          <div style="height:8px;background:#DCE5FF;border-radius:4px;margin-bottom:4px;"></div>
+          <div style="font-size:10px;color:#7B8EC8;">1800 kcal remaining</div>
+        </div>
+        <div style="background:#FFF;border-radius:12px;overflow:hidden;">
+          <div style="display:flex;align-items:center;padding:12px 14px;gap:8px;border-bottom:1px solid #DCE5FF;">
+            <div style="width:30px;height:30px;background:#FEF3C7;border-radius:15px;display:flex;align-items:center;justify-content:center;">☕</div>
+            <span style="font-size:12px;font-weight:600;color:#1A2138;flex:1;">Breakfast</span>
+            <div style="font-size:11px;color:#1D9BF0;">📷</div>
+          </div>
+          <div style="padding:10px 14px;font-size:11px;color:#7B8EC8;text-align:center;">No food logged yet</div>
+        </div>
+        <div style="background:#FFF;border-radius:12px;overflow:hidden;">
+          <div style="display:flex;align-items:center;padding:12px 14px;gap:8px;border-bottom:1px solid #DCE5FF;">
+            <div style="width:30px;height:30px;background:#DCFCE7;border-radius:15px;display:flex;align-items:center;justify-content:center;">☀️</div>
+            <span style="font-size:12px;font-weight:600;color:#1A2138;flex:1;">Lunch</span>
+          </div>
+          <div style="padding:10px 14px;font-size:11px;color:#7B8EC8;text-align:center;">No food logged yet</div>
+        </div>
+      </div>
+      <div class="screen-spec">
+        <div class="spec-row"><span class="spec-key">Calorie bar</span><span class="spec-val">8px · #1D9BF0 fill</span></div>
+        <div class="spec-row"><span class="spec-key">Camera btn</span><span class="spec-val">40×40 · #FEF3C7 bg</span></div>
+        <div class="spec-row"><span class="spec-key">Meal icons</span><span class="spec-val">☕ ☀️ 🌙 ⚡</span></div>
+        <div class="spec-row"><span class="spec-key">Photo modal</span><span class="spec-val">Camera + gallery picker</span></div>
+      </div>
+    </div>
+
+    <div class="screen-card">
+      <div class="screen-header-bar">
+        <div class="screen-num">6</div>
+        <div class="screen-name">More / Features Hub</div>
+        <div class="screen-route">/(tabs)/more</div>
+      </div>
+      <div class="screen-mockup" style="background:#F5F8FF;padding:16px;display:flex;flex-direction:column;gap:10px;">
+        <div style="background:#FFF;border-radius:12px;padding:16px;display:flex;align-items:center;gap:14px;">
+          <div style="width:48px;height:48px;border-radius:24px;background:#1D9BF0;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:800;color:#FFF;">RK</div>
+          <div style="flex:1;"><div style="font-size:13px;font-weight:700;color:#1A2138;">Ramesh Kumar</div><div style="font-size:11px;color:#7B8EC8;">Age 45 · Type 2 Diabetes</div></div>
+          <div style="background:#E8F0FE;border-radius:8px;padding:4px 10px;font-size:11px;font-weight:600;color:#1D9BF0;">Patient</div>
+        </div>
+        <div style="background:#FFF;border-radius:12px;overflow:hidden;">
+          <div style="display:flex;align-items:center;padding:12px 14px;gap:12px;border-bottom:1px solid #DCE5FF;">
+            <div style="width:36px;height:36px;background:#DCFCE7;border-radius:18px;display:flex;align-items:center;justify-content:center;">🏃</div>
+            <div style="flex:1;"><div style="font-size:12px;font-weight:600;color:#1A2138;">Exercise Tracker</div><div style="font-size:10px;color:#7B8EC8;">Log your daily activity</div></div>
+            <span style="color:#7B8EC8;">›</span>
+          </div>
+          <div style="display:flex;align-items:center;padding:12px 14px;gap:12px;border-bottom:1px solid #DCE5FF;">
+            <div style="width:36px;height:36px;background:#FEF3C7;border-radius:18px;display:flex;align-items:center;justify-content:center;">👣</div>
+            <div style="flex:1;"><div style="font-size:12px;font-weight:600;color:#1A2138;">Foot Care</div><div style="font-size:10px;color:#7B8EC8;">Daily foot health checklist</div></div>
+            <span style="color:#7B8EC8;">›</span>
+          </div>
+          <div style="display:flex;align-items:center;padding:12px 14px;gap:12px;">
+            <div style="width:36px;height:36px;background:#EDE9FE;border-radius:18px;display:flex;align-items:center;justify-content:center;">💬</div>
+            <div style="flex:1;"><div style="font-size:12px;font-weight:600;color:#1A2138;">Talk to Doctor</div><div style="font-size:10px;color:#7B8EC8;">Chat and emergency contact</div></div>
+            <span style="color:#7B8EC8;">›</span>
+          </div>
+        </div>
+      </div>
+      <div class="screen-spec">
+        <div class="spec-row"><span class="spec-key">Avatar</span><span class="spec-val">48×48 circle · initials</span></div>
+        <div class="spec-row"><span class="spec-key">Menu row</span><span class="spec-val">~60px · chevron right</span></div>
+        <div class="spec-row"><span class="spec-key">Feature icons</span><span class="spec-val">36×36 colored circles</span></div>
+        <div class="spec-row"><span class="spec-key">Logout row</span><span class="spec-val">#EF4444 text + icon</span></div>
+      </div>
+    </div>
+
+    <div class="screen-card">
+      <div class="screen-header-bar">
+        <div class="screen-num">7</div>
+        <div class="screen-name">Foot Care + Camera</div>
+        <div class="screen-route">/foot-care</div>
+      </div>
+      <div class="screen-mockup" style="background:#F5F8FF;padding:16px;display:flex;flex-direction:column;gap:10px;">
+        <div style="background:#FFF;border-radius:12px;padding:16px;">
+          <div style="display:flex;justify-content:space-between;margin-bottom:8px;"><span style="font-size:12px;font-weight:600;color:#1A2138;">Daily Checklist</span><span style="font-size:12px;font-weight:700;color:#F59E0B;">3/7 done</span></div>
+          <div style="height:8px;background:#DCE5FF;border-radius:4px;overflow:hidden;"><div style="height:100%;background:#F59E0B;border-radius:4px;width:43%;"></div></div>
+        </div>
+        <div style="background:#FFF;border-radius:12px;overflow:hidden;">
+          <div style="display:flex;align-items:center;padding:12px;gap:10px;border-bottom:1px solid #DCE5FF;">
+            <div style="width:32px;height:32px;background:#DCFCE7;border-radius:16px;display:flex;align-items:center;justify-content:center;">💧</div>
+            <span style="flex:1;font-size:11px;color:#1A2138;">Wash feet with warm water</span>
+            <div style="width:24px;height:24px;border-radius:12px;background:#22C55E;display:flex;align-items:center;justify-content:center;color:#FFF;font-size:12px;">✓</div>
+          </div>
+          <div style="display:flex;align-items:center;padding:12px;gap:10px;">
+            <div style="width:32px;height:32px;background:#F0F4FF;border-radius:16px;display:flex;align-items:center;justify-content:center;">👁️</div>
+            <span style="flex:1;font-size:11px;color:#1A2138;">Inspect for cuts, blisters</span>
+            <div style="width:24px;height:24px;border-radius:12px;border:2px solid #DCE5FF;"></div>
+          </div>
+        </div>
+        <div style="border:2px dashed #F59E0B;border-radius:12px;padding:20px;display:flex;flex-direction:column;align-items:center;gap:8px;background:#FFFBEB;">
+          <span style="font-size:28px;">📷</span>
+          <span style="font-size:12px;font-weight:700;color:#F59E0B;">Take Foot Photo</span>
+          <span style="font-size:10px;color:#7B8EC8;text-align:center;">Document foot condition for daily monitoring</span>
+        </div>
+        <div style="position:relative;height:48px;">
+          <div style="position:absolute;right:0;width:52px;height:52px;border-radius:26px;background:#F59E0B;display:flex;align-items:center;justify-content:center;font-size:22px;box-shadow:0 6px 20px rgba(245,158,11,0.5);">📷</div>
+        </div>
+      </div>
+      <div class="screen-spec">
+        <div class="spec-row"><span class="spec-key">Amber theme</span><span class="spec-val">#F59E0B accent</span></div>
+        <div class="spec-row"><span class="spec-key">Photo area</span><span class="spec-val">Dashed border · camera icon</span></div>
+        <div class="spec-row"><span class="spec-key">FAB</span><span class="spec-val">58×58 · bottom-right</span></div>
+        <div class="spec-row"><span class="spec-key">Photo grid</span><span class="spec-val">2-col · 120px height</span></div>
+      </div>
+    </div>
+
+    <div class="screen-card">
+      <div class="screen-header-bar">
+        <div class="screen-num">8</div>
+        <div class="screen-name">Notifications</div>
+        <div class="screen-route">overlay / sheet</div>
+      </div>
+      <div class="screen-mockup" style="background:#F5F8FF;padding:16px;display:flex;flex-direction:column;gap:10px;">
+        <div style="background:#FFF;border-radius:16px 16px 0 0;padding:16px;border-bottom:1px solid #DCE5FF;display:flex;align-items:center;gap:10px;">
+          <span style="font-size:18px;">🔔</span>
+          <span style="flex:1;font-size:14px;font-weight:700;color:#1A2138;">Health Alerts</span>
+          <div style="width:28px;height:28px;border-radius:14px;background:#F0F4FF;display:flex;align-items:center;justify-content:center;font-size:12px;">✕</div>
+        </div>
+        <div style="display:flex;gap:8px;">
+          <div style="background:#FEE2E2;border-radius:10px;padding:6px 10px;display:flex;align-items:center;gap:4px;font-size:11px;font-weight:700;color:#EF4444;">🚨 1 Critical</div>
+          <div style="background:#FEF3C7;border-radius:10px;padding:6px 10px;display:flex;align-items:center;gap:4px;font-size:11px;font-weight:700;color:#F59E0B;">⚠️ 1 Warning</div>
+        </div>
+        <div style="background:#FEE2E2;border-left:4px solid #EF4444;border-radius:12px;padding:14px;">
+          <div style="font-size:12px;font-weight:700;color:#1A2138;margin-bottom:4px;">High Blood Sugar Alert</div>
+          <div style="font-size:11px;color:#7B8EC8;line-height:1.5;">Your FBS reading is 500 mg/dL — significantly above normal. Contact your doctor.</div>
+          <div style="font-size:10px;color:#7B8EC8;margin-top:6px;">9:15 AM</div>
+        </div>
+        <div style="background:#FEF3C7;border-left:4px solid #F59E0B;border-radius:12px;padding:14px;">
+          <div style="font-size:12px;font-weight:700;color:#1A2138;margin-bottom:4px;">2 Medications Pending</div>
+          <div style="font-size:11px;color:#7B8EC8;line-height:1.5;">You still need to take: Glipizide, Atorvastatin.</div>
+        </div>
+      </div>
+      <div class="screen-spec">
+        <div class="spec-row"><span class="spec-key">Trigger</span><span class="spec-val">Bell icon in home header</span></div>
+        <div class="spec-row"><span class="spec-key">Badge</span><span class="spec-val">16×16 · #EF4444 dot</span></div>
+        <div class="spec-row"><span class="spec-key">Sheet height</span><span class="spec-val">Max 85% screen</span></div>
+        <div class="spec-row"><span class="spec-key">Alert cards</span><span class="spec-val">4px left border color</span></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<hr class="divider" />
+
+<!-- ══════════════════════ 05 TAB BAR ══════════════════════ -->
+<div class="section">
+  <div class="section-tag">05 — Navigation</div>
+  <h2 class="section-title">Tab Bar</h2>
+  <p class="section-desc">5 tabs — persistent bottom navigation. iOS uses BlurView background; Android uses solid white.</p>
+
+  <div style="background:#FFF;border-radius:20px;overflow:hidden;max-width:400px;border: 2px solid #DCE5FF;box-shadow:0 8px 40px rgba(0,0,0,0.15);">
+    <div class="mock-tabbar" style="padding:12px 0 16px;">
+      <div class="mock-tab"><div style="font-size:22px;">🏠</div><div class="mock-tab-label" style="color:#1D9BF0;">Home</div></div>
+      <div class="mock-tab"><div style="font-size:22px;">💧</div><div class="mock-tab-label" style="color:#7B8EC8;">Glucose</div></div>
+      <div class="mock-tab"><div style="font-size:22px;">💊</div><div class="mock-tab-label" style="color:#7B8EC8;">Medications</div></div>
+      <div class="mock-tab"><div style="font-size:22px;">🍎</div><div class="mock-tab-label" style="color:#7B8EC8;">Diet</div></div>
+      <div class="mock-tab"><div style="font-size:22px;">⋯</div><div class="mock-tab-label" style="color:#7B8EC8;">More</div></div>
+    </div>
+  </div>
+
+  <div style="margin-top:24px;display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;">
+    <div style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:14px;">
+      <div style="font-size:11px;color:rgba(255,255,255,0.4);margin-bottom:6px;">Active color</div>
+      <div style="font-size:14px;font-weight:700;color:#1D9BF0;">#1D9BF0</div>
+    </div>
+    <div style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:14px;">
+      <div style="font-size:11px;color:rgba(255,255,255,0.4);margin-bottom:6px;">Inactive color</div>
+      <div style="font-size:14px;font-weight:700;color:#7B8EC8;">#7B8EC8</div>
+    </div>
+    <div style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:14px;">
+      <div style="font-size:11px;color:rgba(255,255,255,0.4);margin-bottom:6px;">Icon size</div>
+      <div style="font-size:14px;font-weight:700;color:#FFF;">24px</div>
+    </div>
+    <div style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:14px;">
+      <div style="font-size:11px;color:rgba(255,255,255,0.4);margin-bottom:6px;">Label size</div>
+      <div style="font-size:14px;font-weight:700;color:#FFF;">11px / 500</div>
+    </div>
+    <div style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:14px;">
+      <div style="font-size:11px;color:rgba(255,255,255,0.4);margin-bottom:6px;">iOS bg</div>
+      <div style="font-size:14px;font-weight:700;color:#FFF;">BlurView 100</div>
+    </div>
+    <div style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:14px;">
+      <div style="font-size:11px;color:rgba(255,255,255,0.4);margin-bottom:6px;">Android bg</div>
+      <div style="font-size:14px;font-weight:700;color:#FFF;">#FFFFFF</div>
+    </div>
+  </div>
+</div>
+
+<hr class="divider" />
+
+<!-- ══════════════════════ 06 COMPONENTS ══════════════════════ -->
+<div class="section">
+  <div class="section-tag">06 — Components</div>
+  <h2 class="section-title">UI Components</h2>
+  <p class="section-desc">Reusable building blocks with full spec details.</p>
+
+  <div class="comp-grid">
+
+    <div class="comp-card">
+      <div class="comp-preview">
+        <button class="prev-btn primary">Primary Button</button>
+        <button class="prev-btn secondary">Secondary</button>
+        <button class="prev-btn danger">Danger</button>
+        <button class="prev-btn disabled">Disabled</button>
+      </div>
+      <div class="comp-info">
+        <div class="comp-name">Buttons</div>
+        <div class="comp-desc">Height: 50–52px · Border radius: 10px · Font: 15–16px / 600</div>
+        <div class="comp-props">
+          <span class="comp-prop">primary: #1D9BF0</span>
+          <span class="comp-prop">secondary: #E8F0FE</span>
+          <span class="comp-prop">danger: #FEE2E2</span>
+          <span class="comp-prop">disabled: #F0F4FF</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="comp-card">
+      <div class="comp-preview" style="flex-direction:column;align-items:stretch;">
+        <input class="prev-input" placeholder="Enter value…" readonly />
+        <input class="prev-input focused" value="120 mg/dL" readonly style="margin-top:8px;" />
+      </div>
+      <div class="comp-info">
+        <div class="comp-name">Text Inputs</div>
+        <div class="comp-desc">Height: 48–54px · Radius: 10px · Border: 1.5px solid #DCE5FF</div>
+        <div class="comp-props">
+          <span class="comp-prop">bg: #F0F4FF</span>
+          <span class="comp-prop">focused border: #1D9BF0</span>
+          <span class="comp-prop">focused bg: #EFF6FF</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="comp-card">
+      <div class="comp-preview">
+        <span class="prev-badge success">Normal</span>
+        <span class="prev-badge warning">Pre-diabetic</span>
+        <span class="prev-badge danger">High</span>
+        <span class="prev-badge info">Info</span>
+      </div>
+      <div class="comp-info">
+        <div class="comp-name">Status Badges</div>
+        <div class="comp-desc">Radius: 20px · Padding: 4px 10px · Font: 11px / 700</div>
+        <div class="comp-props">
+          <span class="comp-prop">bg = color at 15% opacity</span>
+          <span class="comp-prop">text = full color</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="comp-card">
+      <div class="comp-preview">
+        <div class="prev-card">
+          <div style="display:flex;gap:10px;align-items:center;margin-bottom:12px;">
+            <div style="width:36px;height:36px;background:#FEF3C7;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;">💧</div>
+            <div><div class="prev-card-title">500 mg/dL</div><div class="prev-card-sub">FBS · High</div></div>
+          </div>
+          <div style="height:4px;background:#DCE5FF;border-radius:2px;"><div style="height:100%;width:80%;background:#EF4444;border-radius:2px;"></div></div>
+        </div>
+      </div>
+      <div class="comp-info">
+        <div class="comp-name">Stat Cards</div>
+        <div class="comp-desc">Radius: 14px · Shadow: 0 2px 8px rgba(0,0,0,0.06) · Padding: 14–16px</div>
+        <div class="comp-props">
+          <span class="comp-prop">bg: #FFFFFF</span>
+          <span class="comp-prop">icon badge: 36×36</span>
+          <span class="comp-prop">elevation: 2</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="comp-card">
+      <div class="comp-preview">
+        <div class="prev-icon-badge" style="background:#DBEAFE;">💧</div>
+        <div class="prev-icon-badge" style="background:#DCFCE7;">💊</div>
+        <div class="prev-icon-badge" style="background:#FEF3C7;">☀️</div>
+        <div class="prev-icon-badge" style="background:#EDE9FE;">🏃</div>
+        <div class="prev-icon-badge" style="background:#FCE7F3;">🌙</div>
+      </div>
+      <div class="comp-info">
+        <div class="comp-name">Icon Badges</div>
+        <div class="comp-desc">44×44 circle · icon 22px · background: semantic color at ~15%</div>
+        <div class="comp-props">
+          <span class="comp-prop">blue: #DBEAFE</span>
+          <span class="comp-prop">green: #DCFCE7</span>
+          <span class="comp-prop">yellow: #FEF3C7</span>
+          <span class="comp-prop">purple: #EDE9FE</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="comp-card">
+      <div class="comp-preview" style="flex-direction:column;gap:10px;align-items:stretch;">
+        <div class="prev-progress">
+          <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:6px;"><span style="color:#7B8EC8;">Daily Progress</span><span style="color:#22C55E;font-weight:700;">4/4</span></div>
+          <div class="prev-progress-bar"><div class="prev-progress-fill" style="width:100%;background:#22C55E;"></div></div>
+        </div>
+        <div class="prev-progress">
+          <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:6px;"><span style="color:#7B8EC8;">Calories</span><span style="color:#1D9BF0;font-weight:700;">800/1800</span></div>
+          <div class="prev-progress-bar"><div class="prev-progress-fill" style="width:44%;background:#1D9BF0;"></div></div>
+        </div>
+        <div class="prev-progress">
+          <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:6px;"><span style="color:#7B8EC8;">Foot Care</span><span style="color:#F59E0B;font-weight:700;">3/7</span></div>
+          <div class="prev-progress-bar"><div class="prev-progress-fill" style="width:43%;background:#F59E0B;"></div></div>
+        </div>
+      </div>
+      <div class="comp-info">
+        <div class="comp-name">Progress Bars</div>
+        <div class="comp-desc">Height: 6–8px · Track: #DCE5FF · Radius: 4px · Overflow: hidden</div>
+        <div class="comp-props">
+          <span class="comp-prop">success: #22C55E</span>
+          <span class="comp-prop">primary: #1D9BF0</span>
+          <span class="comp-prop">warning: #F59E0B</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="comp-card">
+      <div class="comp-preview">
+        <div style="background:#FEE2E2;border-left:4px solid #EF4444;border-radius:10px;padding:12px 14px;max-width:220px;">
+          <div style="font-size:12px;font-weight:700;color:#1A2138;margin-bottom:4px;">High Blood Sugar</div>
+          <div style="font-size:11px;color:#7B8EC8;line-height:1.5;">FBS is 500 mg/dL. Contact your doctor.</div>
+        </div>
+      </div>
+      <div class="comp-info">
+        <div class="comp-name">Alert Cards</div>
+        <div class="comp-desc">Left border: 4px colored · bg: semantic 15% · Radius: 12–14px</div>
+        <div class="comp-props">
+          <span class="comp-prop">danger: #FEE2E2 / #EF4444</span>
+          <span class="comp-prop">warning: #FEF3C7 / #F59E0B</span>
+          <span class="comp-prop">info: #DBEAFE / #1D9BF0</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="comp-card">
+      <div class="comp-preview">
+        <div style="position:relative;display:inline-flex;">
+          <div style="width:48px;height:48px;background:rgba(255,255,255,0.2);border-radius:24px;display:flex;align-items:center;justify-content:center;font-size:22px;background:#E8F0FE;">🔔</div>
+          <div style="position:absolute;top:2px;right:2px;width:16px;height:16px;background:#EF4444;border-radius:8px;border:2px solid #FFF;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:#FFF;">3</div>
+        </div>
+        <div style="width:58px;height:58px;border-radius:29px;background:#F59E0B;display:flex;align-items:center;justify-content:center;font-size:24px;box-shadow:0 6px 20px rgba(245,158,11,0.5);">📷</div>
+      </div>
+      <div class="comp-info">
+        <div class="comp-name">FAB &amp; Notification Bell</div>
+        <div class="comp-desc">FAB: 58×58 · Notif: 42×42 · Badge: 16×16 absolute top-right</div>
+        <div class="comp-props">
+          <span class="comp-prop">fab shadow: color 40%</span>
+          <span class="comp-prop">badge: #EF4444</span>
+          <span class="comp-prop">badge border: 1.5px white</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<hr class="divider" />
+
+<!-- ══════════════════════ 07 ICONS ══════════════════════ -->
+<div class="section">
+  <div class="section-tag">07 — Assets</div>
+  <h2 class="section-title">Icon Reference</h2>
+  <p class="section-desc">All icons from <strong style="color:#1D9BF0;">MaterialCommunityIcons</strong> (@expo/vector-icons). Default size: 24px.</p>
+
+  <div class="icon-grid">
+    <div class="icon-item"><div class="icon-emoji">🏠</div><div class="icon-name">home</div></div>
+    <div class="icon-item"><div class="icon-emoji">💧</div><div class="icon-name">water-percent</div></div>
+    <div class="icon-item"><div class="icon-emoji">💊</div><div class="icon-name">pill</div></div>
+    <div class="icon-item"><div class="icon-emoji">🍎</div><div class="icon-name">food-apple</div></div>
+    <div class="icon-item"><div class="icon-emoji">⋯</div><div class="icon-name">dots-grid</div></div>
+    <div class="icon-item"><div class="icon-emoji">🔔</div><div class="icon-name">bell</div></div>
+    <div class="icon-item"><div class="icon-emoji">📷</div><div class="icon-name">camera</div></div>
+    <div class="icon-item"><div class="icon-emoji">📷+</div><div class="icon-name">camera-plus</div></div>
+    <div class="icon-item"><div class="icon-emoji">✅</div><div class="icon-name">check-circle</div></div>
+    <div class="icon-item"><div class="icon-emoji">✓</div><div class="icon-name">check</div></div>
+    <div class="icon-item"><div class="icon-emoji">+</div><div class="icon-name">plus</div></div>
+    <div class="icon-item"><div class="icon-emoji">←</div><div class="icon-name">arrow-left</div></div>
+    <div class="icon-item"><div class="icon-emoji">›</div><div class="icon-name">chevron-right</div></div>
+    <div class="icon-item"><div class="icon-emoji">∧</div><div class="icon-name">chevron-up</div></div>
+    <div class="icon-item"><div class="icon-emoji">∨</div><div class="icon-name">chevron-down</div></div>
+    <div class="icon-item"><div class="icon-emoji">☀️</div><div class="icon-name">weather-sunny</div></div>
+    <div class="icon-item"><div class="icon-emoji">🌙</div><div class="icon-name">weather-night</div></div>
+    <div class="icon-item"><div class="icon-emoji">⛅</div><div class="icon-name">partly-cloudy</div></div>
+    <div class="icon-item"><div class="icon-emoji">🌅</div><div class="icon-name">weather-sunset</div></div>
+    <div class="icon-item"><div class="icon-emoji">⚡</div><div class="icon-name">lightning-bolt</div></div>
+    <div class="icon-item"><div class="icon-emoji">☕</div><div class="icon-name">coffee</div></div>
+    <div class="icon-item"><div class="icon-emoji">💧</div><div class="icon-name">water</div></div>
+    <div class="icon-item"><div class="icon-emoji">❤️</div><div class="icon-name">heart</div></div>
+    <div class="icon-item"><div class="icon-emoji">👁️</div><div class="icon-name">eye</div></div>
+    <div class="icon-item"><div class="icon-emoji">✂️</div><div class="icon-name">content-cut</div></div>
+    <div class="icon-item"><div class="icon-emoji">🛡️</div><div class="icon-name">shield-check</div></div>
+    <div class="icon-item"><div class="icon-emoji">⚠️</div><div class="icon-name">alert</div></div>
+    <div class="icon-item"><div class="icon-emoji">🚨</div><div class="icon-name">alert-circle</div></div>
+    <div class="icon-item"><div class="icon-emoji">ℹ️</div><div class="icon-name">information</div></div>
+    <div class="icon-item"><div class="icon-emoji">📅</div><div class="icon-name">calendar-heart</div></div>
+    <div class="icon-item"><div class="icon-emoji">🏃</div><div class="icon-name">run</div></div>
+    <div class="icon-item"><div class="icon-emoji">🚴</div><div class="icon-name">bike</div></div>
+    <div class="icon-item"><div class="icon-emoji">🎵</div><div class="icon-name">music-note</div></div>
+    <div class="icon-item"><div class="icon-emoji">🏋️</div><div class="icon-name">dumbbell</div></div>
+    <div class="icon-item"><div class="icon-emoji">🎯</div><div class="icon-name">target</div></div>
+    <div class="icon-item"><div class="icon-emoji">💬</div><div class="icon-name">message-text</div></div>
+    <div class="icon-item"><div class="icon-emoji">📞</div><div class="icon-name">phone</div></div>
+    <div class="icon-item"><div class="icon-emoji">📤</div><div class="icon-name">send</div></div>
+    <div class="icon-item"><div class="icon-emoji">📖</div><div class="icon-name">book-open-variant</div></div>
+    <div class="icon-item"><div class="icon-emoji">🚪</div><div class="icon-name">logout</div></div>
+    <div class="icon-item"><div class="icon-emoji">😢</div><div class="icon-name">emoticon-sad</div></div>
+    <div class="icon-item"><div class="icon-emoji">😐</div><div class="icon-name">emoticon-neutral</div></div>
+    <div class="icon-item"><div class="icon-emoji">😊</div><div class="icon-name">emoticon-happy</div></div>
+    <div class="icon-item"><div class="icon-emoji">⭐</div><div class="icon-name">star</div></div>
+    <div class="icon-item"><div class="icon-emoji">✏️</div><div class="icon-name">pencil</div></div>
+    <div class="icon-item"><div class="icon-emoji">✕</div><div class="icon-name">close</div></div>
+    <div class="icon-item"><div class="icon-emoji">👤</div><div class="icon-name">account</div></div>
+    <div class="icon-item"><div class="icon-emoji">🧘</div><div class="icon-name">yoga</div></div>
+  </div>
+</div>
+
+<hr class="divider" />
+
+<!-- ══════════════════════ 08 NAVIGATION FLOW ══════════════════════ -->
+<div class="section">
+  <div class="section-tag">08 — Navigation</div>
+  <h2 class="section-title">Navigation Flow</h2>
+  <p class="section-desc">Expo Router file-based navigation. Auth gate at app root.</p>
+
+  <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:20px;padding:40px;overflow-x:auto;">
+
+    <div style="margin-bottom:32px;">
+      <div style="font-size:11px;font-weight:700;color:rgba(255,255,255,0.3);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:16px;">Auth Layer</div>
+      <div class="flow-row" style="justify-content:flex-start;">
+        <div class="flow-node primary"><div class="flow-node-title">App Start</div><div class="flow-node-sub">index.tsx</div></div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-node"><div class="flow-node-title">Not logged in?</div><div class="flow-node-sub">AsyncStorage check</div></div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-node primary"><div class="flow-node-title">Login Screen</div><div class="flow-node-sub">Phone + OTP</div></div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-node success"><div class="flow-node-title">Main Tabs</div><div class="flow-node-sub">/(tabs)</div></div>
+      </div>
+    </div>
+
+    <div style="margin-bottom:32px;">
+      <div style="font-size:11px;font-weight:700;color:rgba(255,255,255,0.3);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:16px;">Main Tab Navigation</div>
+      <div style="display:flex;gap:12px;flex-wrap:wrap;">
+        <div class="flow-node primary" style="text-align:center;"><div style="font-size:18px;margin-bottom:6px;">🏠</div><div class="flow-node-title">Home</div><div class="flow-node-sub">index.tsx</div></div>
+        <div class="flow-node primary" style="text-align:center;"><div style="font-size:18px;margin-bottom:6px;">💧</div><div class="flow-node-title">Glucose</div><div class="flow-node-sub">glucose.tsx</div></div>
+        <div class="flow-node primary" style="text-align:center;"><div style="font-size:18px;margin-bottom:6px;">💊</div><div class="flow-node-title">Medications</div><div class="flow-node-sub">medications.tsx</div></div>
+        <div class="flow-node primary" style="text-align:center;"><div style="font-size:18px;margin-bottom:6px;">🍎</div><div class="flow-node-title">Diet</div><div class="flow-node-sub">diet.tsx</div></div>
+        <div class="flow-node primary" style="text-align:center;"><div style="font-size:18px;margin-bottom:6px;">⋯</div><div class="flow-node-title">More</div><div class="flow-node-sub">more.tsx</div></div>
+      </div>
+    </div>
+
+    <div>
+      <div style="font-size:11px;font-weight:700;color:rgba(255,255,255,0.3);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:16px;">Sub-screens (from More tab)</div>
+      <div style="display:flex;gap:12px;flex-wrap:wrap;">
+        <div class="flow-node" style="text-align:center;"><div style="font-size:18px;margin-bottom:6px;">🏃</div><div class="flow-node-title">Exercise</div><div class="flow-node-sub">exercise.tsx</div></div>
+        <div class="flow-node" style="text-align:center;"><div style="font-size:18px;margin-bottom:6px;">👣</div><div class="flow-node-title">Foot Care</div><div class="flow-node-sub">foot-care.tsx</div></div>
+        <div class="flow-node" style="text-align:center;"><div style="font-size:18px;margin-bottom:6px;">💬</div><div class="flow-node-title">Doctor Chat</div><div class="flow-node-sub">communication.tsx</div></div>
+        <div class="flow-node" style="text-align:center;"><div style="font-size:18px;margin-bottom:6px;">🌙</div><div class="flow-node-title">Sleep</div><div class="flow-node-sub">sleep.tsx</div></div>
+        <div class="flow-node" style="text-align:center;"><div style="font-size:18px;margin-bottom:6px;">📖</div><div class="flow-node-title">Education</div><div class="flow-node-sub">education.tsx</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div><!-- /page -->
+
+<!-- ══════════════════════ FOOTER ══════════════════════ -->
+<div class="spec-footer">
+  <div class="footer-title">Diabetic Care — Design System v1.0</div>
+  <div class="footer-sub">Use this document as your Figma reference. Recreate each section as a Figma page.</div>
+  <div class="footer-grid">
+    <div>
+      <div class="footer-col-title">How to Use in Figma</div>
+      <div class="footer-col-item">1. Create a new Figma file</div>
+      <div class="footer-col-item">2. Add pages: Colors, Typography, Components, Screens</div>
+      <div class="footer-col-item">3. Copy hex codes from the Color Palette section</div>
+      <div class="footer-col-item">4. Set up Text Styles from the Typography table</div>
+      <div class="footer-col-item">5. Build components using the specs above</div>
+    </div>
+    <div>
+      <div class="footer-col-title">Device Frame</div>
+      <div class="footer-col-item">Frame: 390×844 (iPhone 14)</div>
+      <div class="footer-col-item">Android: 412×915 (Pixel 7)</div>
+      <div class="footer-col-item">Safe area top: 44–59px</div>
+      <div class="footer-col-item">Safe area bottom: 34px</div>
+      <div class="footer-col-item">Tab bar height: 84px</div>
+    </div>
+    <div>
+      <div class="footer-col-title">Key Figma Plugins</div>
+      <div class="footer-col-item">Material Symbols (icons)</div>
+      <div class="footer-col-item">Phosphor Icons</div>
+      <div class="footer-col-item">Content Reel (mock data)</div>
+      <div class="footer-col-item">Figma Tokens (color vars)</div>
+      <div class="footer-col-item">Auto Layout everywhere</div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
